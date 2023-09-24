@@ -11,16 +11,20 @@ K_THREAD_STACK_DEFINE(coop_stack, STACKSIZE);
 
 struct k_sem semaphore;
 int counter;
+
+void update_counter(int *counter_, struct k_sem *semaphore_,char * thread){
+     k_sem_take(semaphore_, K_FOREVER);
+     (*counter_) = (*counter_) + 1;
+	 printk("hello world from %s! Count %d\n", thread, *counter_);
+	 k_sem_give(semaphore_);
+}
 void thread_entry(void)
 {
 	struct k_timer timer;
 	k_timer_init(&timer, NULL, NULL);
 
 	while (1) {
-        k_sem_take(&semaphore, K_FOREVER);
-        counter = counter + 1;
-		printk("hello world from %s! Count %d\n", "thread", counter);
-		k_sem_give(&semaphore);
+        update_counter(&counter,&semaphore,"thread");
         k_timer_start(&timer, K_MSEC(SLEEPTIME), K_NO_WAIT);
 		k_timer_status_sync(&timer);
         
@@ -46,10 +50,7 @@ int main(void)
 	k_timer_init(&timer, NULL, NULL);
 
 	while (1) {
-        k_sem_take(&semaphore, K_FOREVER);
-        counter = counter + 1;
-		printk("hello world from %s! Count %d\n", "main", counter);
-	    k_sem_give(&semaphore);
+        update_counter(&counter,&semaphore,"main");
         k_timer_start(&timer, K_MSEC(SLEEPTIME), K_NO_WAIT);
 		k_timer_status_sync(&timer);
         
