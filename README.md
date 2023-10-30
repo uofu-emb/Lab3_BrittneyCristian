@@ -133,8 +133,8 @@ _For more examples, please refer to the [Documentation](https://example.com)_
 - [x] Activity 1 We refactored the code in activity 0 to protect the critical sections (the counter and printing).
 - [x] Activity 2 we wrote the functions test_semaphore_unlocked() and test_semaphore_locked().
 - [x] Activity 3 Ashton removed it.
-- [x] Activity 4 created the lock and test it with  test_semaphore_deadlock().
-- [ ] Activity 5
+- [x] Activity 4 created the lock and tested it with  test_semaphore_deadlock().
+- [x] Activity 5 created two function orphaned_lock() and unorphaned_lock() and test them in two separated functions.
 
 See the [open issues](https://github.com/ctapiero/lab6/issues) for a full list of proposed features (and known issues).
 
