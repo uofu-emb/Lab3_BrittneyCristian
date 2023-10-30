@@ -90,11 +90,53 @@ void test_semaphore_deadlocked(void) {
   
 }
 
+void test_orphaned(void)
+{
+    int counter = 1;
+    struct k_sem semaphore;
+    k_sem_init(&semaphore, 1, 1);
+
+    orphaned_lock(&semaphore, K_MSEC(500),&counter);
+    TEST_ASSERT_EQUAL_INT(2, counter);
+    // Note that reading and using the value of the semaphore
+    // isn't usually a good idea in real situations.
+    TEST_ASSERT_EQUAL_INT(1, k_sem_count_get(&semaphore));
+
+    orphaned_lock(&semaphore, K_MSEC(500), &counter);
+    TEST_ASSERT_EQUAL_INT(3, counter);
+    TEST_ASSERT_EQUAL_INT(0, k_sem_count_get(&semaphore));
+
+    orphaned_lock(&semaphore, K_MSEC(500), &counter);
+    TEST_ASSERT_EQUAL_INT(3, counter);
+    TEST_ASSERT_EQUAL_INT(0, k_sem_count_get(&semaphore));
+}
+
+void test_unorphaned(void)
+{
+    int counter = 1;
+    struct k_sem semaphore;
+    k_sem_init(&semaphore, 1, 1);
+
+    int result;
+    result = unorphaned_lock(&semaphore, K_MSEC(500), &counter);
+    TEST_ASSERT_EQUAL_INT(2, counter);
+    TEST_ASSERT_EQUAL_INT(0, result);
+    TEST_ASSERT_EQUAL_INT(1, k_sem_count_get(&semaphore));
+
+    result = unorphaned_lock(&semaphore, K_MSEC(500), &counter);
+    TEST_ASSERT_EQUAL_INT(3, counter);
+    TEST_ASSERT_EQUAL_INT(0, result);
+    TEST_ASSERT_EQUAL_INT(1, k_sem_count_get(&semaphore));
+}
+
+
 int runUnityTests(void) {
   UNITY_BEGIN();
   RUN_TEST(test_semaphore_unlocked);
   RUN_TEST(test_semaphore_deadlocked);
   RUN_TEST(test_semaphore_locked);
+  RUN_TEST(test_orphaned);
+  RUN_TEST(test_unorphaned);
 
 
   return UNITY_END();

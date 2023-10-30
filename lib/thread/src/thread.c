@@ -64,3 +64,29 @@ void thread2(void *semaphore1_, void *semaphore2_, void *p3) {
     
 }
 
+int orphaned_lock(struct k_sem *semaphore, k_timeout_t timeout, int *counter)
+{
+    if (k_sem_take(semaphore, timeout)) return 1;
+    (*counter)++;
+    if (*counter % 2) {
+        return 0;
+    }
+    printk("Count %d\n", *counter);
+    k_sem_give(semaphore);
+    return 0;
+}
+
+int unorphaned_lock(struct k_sem *semaphore, k_timeout_t timeout, int *counter)
+{
+    if (k_sem_take(semaphore, timeout))
+        return 1;
+    {
+        (*counter)++;
+        if (!(*counter % 2)) {
+            printk("Count %d\n", *counter);
+        }
+    }
+    k_sem_give(semaphore);
+    return 0;
+}
+
