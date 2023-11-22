@@ -10,3 +10,6 @@ void thread1(void *p1, void *p2, void *p3);
 void thread2(void *p1, void *p2, void *p3);
 int orphaned_lock(struct k_sem *semaphore, k_timeout_t timeout, int *counter);
 int unorphaned_lock(struct k_sem *semaphore, k_timeout_t timeout, int *counter);
+void deadlock(struct k_sem *a, struct k_sem *b, int *counter);
+
+

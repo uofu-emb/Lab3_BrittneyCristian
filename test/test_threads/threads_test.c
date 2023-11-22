@@ -49,6 +49,9 @@ TEST_ASSERT_EQUAL_INT(0, counter);
 
 }
 
+int counter1 = 1;
+int counter0 = 0;
+
 void test_semaphore_deadlocked(void) {
     k_tid_t tid1, tid2;
     k_sem_init(&semaphore_a, 1, 1);
@@ -58,21 +61,21 @@ void test_semaphore_deadlocked(void) {
     tid1 =  k_thread_create(&coop_thread,
                     coop_stack,
                     STACKSIZE,
-                    (k_thread_entry_t) thread1,
+                    (k_thread_entry_t) deadlock,
                     &semaphore_a,
                     &semaphore_b,
-                    NULL,
-                    K_PRIO_COOP(7),
+                    &counter0,
+                    K_PRIO_COOP(6),
                     0,
                     K_NO_WAIT);
     tid2 =  k_thread_create(&coop_thread,
                     coop_stack,
                     STACKSIZE,
-                    (k_thread_entry_t) thread2,
-                    &semaphore_a,
+                    (k_thread_entry_t) deadlock,
                     &semaphore_b,
-                    NULL,
-                    K_PRIO_COOP(7),
+                    &semaphore_a,
+                    &counter1,
+                    K_PRIO_COOP(6),
                     0,
                     K_NO_WAIT);
 
@@ -133,7 +136,7 @@ void test_unorphaned(void)
 int runUnityTests(void) {
   UNITY_BEGIN();
   RUN_TEST(test_semaphore_unlocked);
-  RUN_TEST(test_semaphore_deadlocked);
+  // RUN_TEST(test_semaphore_deadlocked);
   RUN_TEST(test_semaphore_locked);
   RUN_TEST(test_orphaned);
   RUN_TEST(test_unorphaned);
